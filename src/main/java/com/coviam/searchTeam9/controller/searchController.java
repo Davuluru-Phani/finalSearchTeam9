@@ -1,5 +1,6 @@
 package com.coviam.searchTeam9.controller;
 
+import com.coviam.searchTeam9.document.InputDTO;
 import com.coviam.searchTeam9.document.Product;
 import com.coviam.searchTeam9.dto.ProductDTO;
 import com.coviam.searchTeam9.dto.ProductInput;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/search")
+@CrossOrigin(origins = "*")
 public class searchController {
 
     @Autowired
@@ -32,8 +34,8 @@ public class searchController {
         }
     }
 
-    @GetMapping(path = "/bySearch/{name}")
-    public ResponseEntity<List<ProductDTO>> getProductsBySearch(@PathVariable String name) {
+    @GetMapping(path = "/bySearchURL/{name}")
+    public ResponseEntity<List<ProductDTO>> getProductsBySearchURL(@PathVariable String name) {
         List<ProductDTO> list = new LinkedList<ProductDTO>();
         for (Product p : searchService.searchIn(name)) {
             ProductDTO productDTO = new ProductDTO();
@@ -42,5 +44,18 @@ public class searchController {
         }
         return new ResponseEntity<List<ProductDTO>>(list, HttpStatus.CREATED);
     }
+
+    @PostMapping(path = "/bySearch")
+    public ResponseEntity<List<ProductDTO>> getProductsBySearch(@RequestBody InputDTO inputDTO) {
+        List<ProductDTO> list = new LinkedList<ProductDTO>();
+        String name=inputDTO.getInputData();
+        for (Product p : searchService.searchIn(name)) {
+            ProductDTO productDTO = new ProductDTO();
+            BeanUtils.copyProperties(p, productDTO);
+            list.add(productDTO);
+        }
+        return new ResponseEntity<List<ProductDTO>>(list, HttpStatus.CREATED);
+    }
+
 
 }
