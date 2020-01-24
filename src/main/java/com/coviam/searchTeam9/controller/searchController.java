@@ -48,6 +48,7 @@ public class searchController {
     @PostMapping(path = "/bySearch")
     public ResponseEntity<List<ProductDTO>> getProductsBySearch(@RequestBody InputDTO inputDTO) {
         List<ProductDTO> list = new LinkedList<ProductDTO>();
+        System.out.println();
         String name=inputDTO.getInputData();
         for (Product p : searchService.searchIn(name)) {
             ProductDTO productDTO = new ProductDTO();
