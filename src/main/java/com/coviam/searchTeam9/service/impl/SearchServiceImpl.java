@@ -4,17 +4,17 @@ import com.coviam.searchTeam9.document.Product;
 import com.coviam.searchTeam9.dto.ProductInput;
 import com.coviam.searchTeam9.repository.SearchRepository;
 import com.coviam.searchTeam9.service.SearchService;
+import com.fasterxml.jackson.databind.ser.std.CollectionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Service
 public class SearchServiceImpl implements SearchService {
@@ -54,6 +54,7 @@ public class SearchServiceImpl implements SearchService {
         product.setUrl2(productInput.getUrl2());
         product.setUrl3(productInput.getUrl3());
         searchRepository.save(product);
+
     }
 
 //    @Override
@@ -61,13 +62,35 @@ public class SearchServiceImpl implements SearchService {
 //        return searchRepository.findByCategoryName(categoryName);
 //    }
 
+    public List<Product> sortByPrice(){
+        Iterable<Product> iterable=searchRepository.findAll(Sort.by(Sort.Direction.ASC,"price"));
+        ArrayList<Product> arrayList=new ArrayList<>();
+        if(iterable != null) {
+            for(Product x: iterable) {
+                arrayList.add(x);
+            }
+        }
+        return arrayList;
+    }
+
+    public List<Product> sortByRating(){
+        Iterable<Product> iterable=searchRepository.findAll(Sort.by(Sort.Direction.DESC,"productRating"));
+        ArrayList<Product> arrayList=new ArrayList<>();
+        if(iterable != null) {
+            for(Product x: iterable) {
+                arrayList.add(x);
+            }
+        }
+        return arrayList;
+    }
+
     public List<Product> searchIn(String searchTerm) {
 
         SimpleQuery simpleQuery = new SimpleQuery(searchTerm);
 
         simpleQuery.setRequestHandler("/browse");
 
-       List<Product> results= solrTemplate.query("search",simpleQuery, Product.class).getContent();
+        List<Product> results= solrTemplate.query("search",simpleQuery, Product.class).getContent();
 
         return results;
     }
